@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h> 
 #include <string.h>
+#include <math.h>
 
 //$>./computor "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0" 
 void 		ft_exception(std::string text)
@@ -14,61 +15,71 @@ double 		ft_abs(double n)
 	return(n < 0 ? -n : n);
 }
 
-double		ft_sqrt(double n)
+/*Log base 2 approximation and Newton's Method*/
+float		ft_sqrt(const float x)  
 {
-	double	i, j, root;
-
-	i = 1;
-	while (i * i <= n)
-		i++;
-	i--;
-	j = 0.001;
-	while (j < 1.0)
+	union
 	{
-		root = i + j;
-		if (root * root > n)
-		{
-			root -= 0.001;
-			break ;
-		}
-		j += 0.001;
-	}
-	return (root);
-}
+ 		int i;
+		float x;
+	}	u;
+
+	u.x = x;
+	u.i = (1 << 29) + (u.i >> 1) - (1 << 22); 
+	return (u.x);
+} 
 
 int solve(double a, double b, double c)
 {
 	double d, x1 ,x2;
  
+	if (a == 0 && c == 0 && b == 0)
+	{
+		std::cout<<"Equation degree: 1"<<std::endl;
+		std::cout<<"The solution is: "<<std::endl<<"0 = 0"<<std::endl;
+		return (0);
+	}
 	if (a == 0 && c == 0)
 	{
+		std::cout<<"Equation degree: 1"<<std::endl;
 		std::cout<<"The solution is: "<<std::endl<<"0"<<std::endl;
-		exit (0);
+		return (0);
 	} 
 	else if (a == 0 && b == 0)
 	{
+		std::cout<<"Equation degree: 0"<<std::endl;
 		std::cout<<"There is no solution. "<<std::endl;
-		exit (0);
+		return (0);
 	}
-	if (a == 0)
+	else if (c == 0)
 	{
+		std::cout<<"Equation degree: 2"<<std::endl;
+		std::cout<<"The solution is: "<<std::endl<<(-b)/a<<std::endl<<"0"<<std::endl;
+		return (0);
+	}
+	else if (a == 0)
+	{
+		std::cout<<"Equation degree: 1"<<std::endl;
 		std::cout<<"The solution is: "<<std::endl<<(-c)/b<<std::endl;
-		exit (0);
+		return (0);
 	} 
 	d = b * b - 4 * a * c;
 	if (d > 0)
 	{
 		x1 = (-b + ft_sqrt(d)) / (2 * a);
 		x2 = (-b - ft_sqrt(d)) / (2 * a);
+		std::cout<<"Equation degree: 2"<<std::endl;
 		std::cout<<"The solution is: "<<std::endl<<x1<<std::endl<<x2<<std::endl;
 	}
 	else if (d == 0)
 	{
 		x1 = (-b) / (2 * a);
+		std::cout<<"Equation degree: 2"<<std::endl;
 		std::cout<<"The solution is: "<<std::endl<<x1<<std::endl;
 	}
 	else if (d < 0)
 	{
+		std::cout<<"Equation degree: 2"<<std::endl;
 		std::cout<<"The solution is (non real): "<<std::endl;
 		std::cout<< (-b / (2 * a)) << " + "<<(ft_sqrt(-d)) / (2 * a)<< "i"<<std::endl;
 		std::cout<< (-b / (2 * a)) << " - "<<(ft_sqrt(-d)) / (2 * a)<< "i"<<std::endl;
@@ -148,7 +159,7 @@ int			main(int argc, char const **argv)
 				ft_exception("Wrong format: too much =");
 			if (str[i + 1] != ' ')
 				ft_exception("Wrong format: space missed after =");
-			if (!isdigit(str[i + 2]))
+			if (!(isdigit(str[i + 2]) || str[i + 2] == '-'))
 				ft_exception("Wrong format: rigth side digit missed");
 			rs = -1;
 		}
@@ -159,7 +170,6 @@ int			main(int argc, char const **argv)
 	}
 	if (rs != -1)
 		ft_exception("Wrong format: = missed");
-	//Reduced form: 5 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 0
 	std::cout << "Reduced form: ";
 	if (a < 0)
 		std::cout << " - ";
